@@ -8,6 +8,33 @@ class Siswa_model extends CI_Model {
         parent::__construct();
     }
 
+    public function pengumuman($siswa_id)
+    {
+        $this->db->select('*,pengajar.nama as pengajar_nama, mapel.nama as mapel_nama, kelas.nama as kelas_nama, pengumuman.id as pengumuman_id');
+        $this->db->from('pengumuman');
+        $this->db->join('mapel_kelas', 'mapel_kelas.id = pengumuman.mapel_kelas');
+        $this->db->join('pengajar', 'pengajar.id = mapel_kelas.pengajar_id');
+        $this->db->join('kelas_siswa', 'kelas_siswa.id = mapel_kelas.kelas_id');
+        $this->db->join('mapel', 'mapel.id = mapel_kelas.mapel_id');
+        $this->db->join('kelas', 'kelas.id = mapel_kelas.kelas_id');
+        $this->db->where('kelas_siswa.siswa_id',$siswa_id);
+        $this->db->where('pengumuman.tgl_berakhir >=',date('Y-m-d'));
+        return $this->db->get();
+    }
+
+    public function cek_pengumuman($id)
+    {
+        $this->db->select('*,pengajar.nama as pengajar_nama, mapel.nama as mapel_nama, kelas.nama as kelas_nama');
+        $this->db->from('pengumuman');
+        $this->db->join('mapel_kelas', 'mapel_kelas.id = pengumuman.mapel_kelas');
+        $this->db->join('pengajar', 'pengajar.id = mapel_kelas.pengajar_id');
+        $this->db->join('mapel', 'mapel.id = mapel_kelas.mapel_id');
+        $this->db->join('kelas', 'kelas.id = mapel_kelas.kelas_id');  
+        $this->db->where('pengumuman.id',$id);
+        $this->db->where('pengumuman.tgl_berakhir >=',date('Y-m-d'));
+        return $this->db->get();
+    }
+
     public function hitung_tugas($id_siswa)
     {
         $this->db->select('COUNT(*) as jumlah');

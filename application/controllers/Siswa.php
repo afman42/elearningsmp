@@ -15,13 +15,15 @@ class Siswa extends CI_Controller {
 		$this->load->model('Kelas_model');
 		$this->load->model('File_model');
 		$this->load->helper('download');
+		$this->load->helper('text');
 	}
 
     public function index()
 	{
 		$data['header'] = 'E-elearning - Siswa';
-        $data['jadwal'] = $this->Siswa_model->jadwal_siswa($_SESSION['is_siswa'])->result();
-        $data['jumlah_tugas'] = $this->Siswa_model->hitung_tugas($_SESSION['is_siswa'])->result();
+        $data['jadwal'] = $this->Siswa_model->jadwal_siswa($this->session->is_siswa)->result();
+        $data['jumlah_tugas'] = $this->Siswa_model->hitung_tugas($this->session->is_siswa)->result();
+        $data['pengumuman'] = $this->Siswa_model->pengumuman($this->session->is_siswa)->result();
 		$this->load->view('template/header',$data);
 		$this->load->view('siswa/index',$data);
 		$this->load->view('template/footer');
@@ -30,7 +32,7 @@ class Siswa extends CI_Controller {
 	public function file_materi()
     {
     	$data['header'] = 'E-elearning - File Materi';
-        $data['kelas'] = $this->Kelas_model->kelas_siswa($_SESSION['is_siswa'])->result();
+        $data['kelas'] = $this->Kelas_model->kelas_siswa($this->session->is_siswa)->result();
 		$this->load->view('template/header',$data);
 		$this->load->view('siswa/file_materi',$data);
 		$this->load->view('template/footer');
@@ -39,8 +41,8 @@ class Siswa extends CI_Controller {
     public function file_materi_kelas($id)
     {
     	$data['header'] = 'E-elearning - File Materi Kelas';
-        $data['file'] = $this->File_model->file_materi_siswa($_SESSION['is_siswa'],$id)->result();
-        $data['kelas'] = $this->Kelas_model->kelas_siswa($_SESSION['is_siswa'])->row();
+        $data['file'] = $this->File_model->file_materi_siswa($this->session->is_siswa,$id)->result();
+        $data['kelas'] = $this->Kelas_model->kelas_siswa($this->session->is_siswa)->row();
 		$this->load->view('template/header',$data);
 		$this->load->view('siswa/file_materi_kelas',$data);
 		$this->load->view('template/footer');
@@ -54,10 +56,19 @@ class Siswa extends CI_Controller {
     	}
     }
 
+	public function cek_pengumuman($id)
+	{
+		$data['header'] = 'E-elearning - Cek Pengumuman';
+        $data['pengumuman'] = $this->Siswa_model->cek_pengumuman($id)->row();
+		$this->load->view('template/header',$data);
+		$this->load->view('siswa/cek_pengumuman',$data);
+		$this->load->view('template/footer');
+	}
+
     public function tugas()
     {
         $data['header'] = 'E-elearning - Siswa Tugas';
-        $data['ujian'] = $this->Siswa_model->ujian_siswa($_SESSION['is_siswa'])->result();
+        $data['ujian'] = $this->Siswa_model->ujian_siswa($this->session->is_siswa)->result();
 		$this->load->view('template/header',$data);
 		$this->load->view('siswa/ujian',$data);
 		$this->load->view('template/footer');
@@ -79,7 +90,7 @@ class Siswa extends CI_Controller {
 
     public function nilai()
     {
-		$user = $_SESSION['is_siswa'];
+		$user = $this->session->is_siswa;
     	if (empty($_SESSION['email']) AND empty($_SESSION['level']) AND $_SESSION['login']==TRUE){
    			 echo "<script type='text/javascript'>alert('Harap Login Terlebih dahulu');window.location.href='".site_url('utama/login')."'</script>";
 		 
@@ -213,7 +224,7 @@ class Siswa extends CI_Controller {
     public function nilai_tugas()
     {
     	$data['header'] = 'E-elearning - Nilai Tugas';
-        $data['nilai'] = $this->Siswa_model->nilai_tugas($_SESSION['is_siswa'])->result();
+        $data['nilai'] = $this->Siswa_model->nilai_tugas($this->session->is_siswa)->result();
 		$this->load->view('template/header',$data);
 		$this->load->view('siswa/nilai_tugas',$data);
 		$this->load->view('template/footer');
@@ -222,8 +233,8 @@ class Siswa extends CI_Controller {
     public function cek_nilai($id)
     {
     	$data['header'] = 'E-elearning - Cek Nilai Tugas';
-        $data['cek_nilai'] = $this->Siswa_model->cek_nilai_pilganda_tugas($_SESSION['is_siswa'],$id)->result();
-        $data['cek_nilai_essay'] = $this->Siswa_model->cek_nilai_essay_tugas($_SESSION['is_siswa'],$id)->result();
+        $data['cek_nilai'] = $this->Siswa_model->cek_nilai_pilganda_tugas($this->session->is_siswa,$id)->result();
+        $data['cek_nilai_essay'] = $this->Siswa_model->cek_nilai_essay_tugas($this->session->is_siswa,$id)->result();
         $data['mapel'] = $this->Siswa_model->kerjakan_ujian($id)->row(1);
 		$this->load->view('template/header',$data);
 		$this->load->view('siswa/cek_nilai_tugas',$data);
@@ -234,7 +245,7 @@ class Siswa extends CI_Controller {
 	{
 		$data['header'] = 'E-elearning - Ubah Profil Siswa';
 		$data['admin'] = $this->db->get_where('user',['is_siswa' => $this->session->userdata('is_siswa')])->row();
-		$data['siswa'] = $this->db->get_where('siswa',['id' => $_SESSION['is_siswa'] ])->row();
+		$data['siswa'] = $this->db->get_where('siswa',['id' => $this->session->is_siswa ])->row();
 		$this->load->view('template/header',$data);
 		$this->load->view('siswa/ubah_profil',$data);
 		$this->load->view('template/footer');
