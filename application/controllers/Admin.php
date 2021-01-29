@@ -602,8 +602,8 @@ class Admin extends CI_Controller {
 	public function ubah_profil()
 	{
 		$data['header'] = 'E-elearning - Ubah Profil Admin';
-		$data['admin'] = $this->db->get_where('user',['is_pengajar' => $_SESSION['id_pengajar']])->row();
-		$data['pengajar'] = $this->db->get_where('pengajar',['id' => $_SESSION['id_pengajar'] ])->row();
+		$data['admin'] = $this->db->get_where('user',['is_pengajar' => $this->session->id_pengajar])->row();
+		$data['pengajar'] = $this->db->get_where('pengajar',['id' => $this->session->id_pengajar ])->row();
 		$this->load->view('template/header',$data);
 		$this->load->view('admin/ubah_profil',$data);
 		$this->load->view('template/footer');
